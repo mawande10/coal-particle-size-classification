@@ -1,22 +1,63 @@
-# MBRL Education Spending Streamlit App
+# 🪨 Coal Particle Size Classification Dashboard
 
-Upload an Excel workbook containing **Country**, **Year**, and **Actual WB % GDP**. The app learns a transition/world model from historical education-spending observations, simulates candidate expenditure actions, selects an MBRL-derived policy-reference level, then calculates:
+A Streamlit dashboard for analysing and classifying coal particle sizes.
 
-`MBRL-derived % GDP → Deviation → State`
+The application is designed for coal-processing, laboratory particle-size analysis, DEM studies, material handling and research applications.
 
-Deviation: `(Actual WB % GDP - MBRL-derived % GDP) / MBRL-derived % GDP * 100`
+---
 
-Default classification threshold τ = 10%:
-- D < -10%: Underspending
-- -10% ≤ D ≤ +10%: Normal Spending
-- D > +10%: Overspending
+## Dashboard Features
 
-The ±10% rule is an operational research threshold, not an intrinsic MBRL rule.
+The dashboard provides:
 
-## GitHub → Streamlit Cloud
-1. Create a GitHub repository, e.g. `mbrl-education-spending`.
-2. Upload `app.py` and `requirements.txt`.
-3. In Streamlit Community Cloud choose **Deploy an app**.
-4. Select the repository and `app.py` as the main file.
-5. Deploy.
-6. Upload the Excel workbook in the Streamlit app.
+- Excel data upload
+- CSV data upload
+- Built-in sample coal dataset
+- Automatic particle-size classification
+- Editable particle-size thresholds
+- Particle-size distribution histogram
+- P10, P25, P50, P75 and P90 statistics
+- Fine / Small / Medium / Large / Coarse classification
+- Classification percentage
+- Coal-quality analysis
+- Particle size versus ash
+- Particle size versus moisture
+- Particle size versus density
+- Particle size versus calorific value
+- Correlation matrix
+- Individual particle-size prediction
+- Classified Excel download
+- Classified CSV download
+
+---
+
+# Default Particle-Size Classification
+
+The dashboard starts with the following operational classification:
+
+| Particle Size | Classification |
+|---|---|
+| < 0.5 mm | Fine |
+| 0.5 – <2 mm | Small |
+| 2 – <5 mm | Medium |
+| 5 – <10 mm | Large |
+| >= 10 mm | Coarse |
+
+These thresholds are configurable from the Streamlit sidebar.
+
+For a research publication, replace the default thresholds with the particle-size boundaries specified by the relevant laboratory, coal-processing, screening or DEM methodology.
+
+---
+
+# Required Dataset
+
+Your Excel or CSV file should contain a particle-size column.
+
+The application accepts the following names:
+
+```text
+Particle_Size_mm
+Particle_Size
+Size_mm
+ParticleSize_mm
+ParticleSize
