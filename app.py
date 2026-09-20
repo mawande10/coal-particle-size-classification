@@ -179,7 +179,7 @@ with animation_tab:
 
     scat = ax.scatter([], [], s=[], alpha=0.7)
 
-def update(frame):
+    def update(frame):
     xs, ys, sizes, colors = [], [], [], []
     for pos in positions:
         x, y, cls, size = pos
