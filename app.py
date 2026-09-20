@@ -177,13 +177,15 @@ with animation_tab:
 
     scat = ax.scatter([], [], s=[], alpha=0.7)
 
-    def update(frame):
+    scat = ax.scatter([], [], s=[], alpha=0.7)
+
+def update(frame):
     xs, ys, sizes, colors = [], [], [], []
     for pos in positions:
         x, y, cls, size = pos
         y -= 0.1  # move downward
 
-        # AI segregation logic: adjust x based on class dynamically
+        # AI segregation logic
         funnel_ratio = max(0, (hopper_height - y) / hopper_height)
         if cls == "Fine":
             x *= (1 - 0.8 * funnel_ratio)
@@ -195,7 +197,6 @@ with animation_tab:
         # Reset particle if it exits bottom
         if y <= -2:
             y = hopper_height
-            # AI reassigns entry position based on class
             if cls == "Fine":
                 x = np.random.normal(0, 1)
             elif cls == "Coarse":
@@ -213,6 +214,7 @@ with animation_tab:
     scat.set_sizes(sizes)
     scat.set_color(colors)
     return scat,
+
 
 
     ani = animation.FuncAnimation(fig, update, frames=200, interval=100, blit=True)
