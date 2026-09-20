@@ -210,10 +210,10 @@ with animation_tab:
         sizes.append(size)
         colors.append("blue" if cls == "Fine" else "red" if cls == "Coarse" else "gray")
 
-    scat.set_offsets(np.c_[xs, ys])
-    scat.set_sizes(sizes)
-    scat.set_color(colors)
-    return scat,
+      scat.set_offsets(np.c_[xs, ys])
+      scat.set_sizes(sizes)
+      scat.set_color(colors)
+      return scat,
 
 
 
