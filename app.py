@@ -178,38 +178,42 @@ with animation_tab:
     scat = ax.scatter([], [], s=[], alpha=0.7)
 
     def update(frame):
-        xs, ys, sizes, colors = [], [], [], []
-        for pos in positions:
-            x, y, cls, size = pos
-            y -= 0.1  # move downward
-            funnel_ratio = max(0, (hopper_height - y) / hopper_height)
+    xs, ys, sizes, colors = [], [], [], []
+    for pos in positions:
+        x, y, cls, size = pos
+        y -= 0.1  # move downward
+
+        # AI segregation logic: adjust x based on class dynamically
+        funnel_ratio = max(0, (hopper_height - y) / hopper_height)
+        if cls == "Fine":
+            x *= (1 - 0.8 * funnel_ratio)
+        elif cls == "Coarse":
+            x *= (1 - 0.2 * funnel_ratio)
+        else:
+            x *= (1 - 0.5 * funnel_ratio)
+
+        # Reset particle if it exits bottom
+        if y <= -2:
+            y = hopper_height
+            # AI reassigns entry position based on class
             if cls == "Fine":
-                x *= (1 - 0.7 * funnel_ratio)
+                x = np.random.normal(0, 1)
             elif cls == "Coarse":
-                x *= (1 - 0.2 * funnel_ratio)
+                x = np.random.choice([-hopper_width/2, hopper_width/2]) + np.random.normal(0, 0.5)
             else:
-                x *= (1 - 0.5 * funnel_ratio)
+                x = np.random.uniform(-hopper_width/2, hopper_width/2)
 
-            # Reset particle if it exits
-            if y <= -2:
-                y = hopper_height
-                if cls == "Fine":
-                    x = np.random.normal(0, 1)
-                elif cls == "Coarse":
-                    x = np.random.choice([-hopper_width/2, hopper_width/2]) + np.random.normal(0, 0.5)
-                else:
-                    x = np.random.uniform(-hopper_width/2, hopper_width/2)
+        pos[0], pos[1] = x, y
+        xs.append(x)
+        ys.append(y)
+        sizes.append(size)
+        colors.append("blue" if cls == "Fine" else "red" if cls == "Coarse" else "gray")
 
-            pos[0], pos[1] = x, y
-            xs.append(x)
-            ys.append(y)
-            sizes.append(size)
-            colors.append("blue" if cls == "Fine" else "red" if cls == "Coarse" else "gray")
+    scat.set_offsets(np.c_[xs, ys])
+    scat.set_sizes(sizes)
+    scat.set_color(colors)
+    return scat,
 
-        scat.set_offsets(np.c_[xs, ys])
-        scat.set_sizes(sizes)
-        scat.set_color(colors)
-        return scat,
 
     ani = animation.FuncAnimation(fig, update, frames=200, interval=100, blit=True)
     ani.save("hopper_animation.gif", writer="pillow")
