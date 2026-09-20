@@ -1,5 +1,5 @@
 with animation_tab:
-    st.subheader("🎥 Hopper Animation — Continuous Discharge")
+    st.subheader("🎥 Hopper Animation — Funnel Flow")
 
     hopper_width = 10
     hopper_height = 15
@@ -18,7 +18,7 @@ with animation_tab:
             else:
                 x = np.random.uniform(-hopper_width/2, hopper_width/2)
                 size = 50
-            positions.append([x, y, size_class, size])
+            positions.append((x, y, size_class, size))
         return positions
 
     positions = generate_positions(df.sample(min(200, len(df))))
@@ -36,42 +36,26 @@ with animation_tab:
 
     def update(frame):
         xs, ys, sizes, colors = [], [], [], []
-        for pos in positions:
-            x, y, cls, size = pos
-            # Move downward
-            y -= 0.1
-            # Funnel effect: shift x toward center as y decreases
-            funnel_ratio = max(0, (hopper_height - y) / hopper_height)
+        for (x, y, cls, size) in positions:
+            # Funnel effect: as particles move down, x shifts toward center
+            y_new = y - frame * 0.1
+            funnel_ratio = max(0, (hopper_height - y_new) / hopper_height)
             if cls == "Fine":
-                x *= (1 - 0.7 * funnel_ratio)
+                x_new = x * (1 - 0.7 * funnel_ratio)  # strong pull to center
             elif cls == "Coarse":
-                x *= (1 - 0.2 * funnel_ratio)
+                x_new = x * (1 - 0.2 * funnel_ratio)  # weaker pull, stays near walls
             else:
-                x *= (1 - 0.5 * funnel_ratio)
-
-            # Reset particle if it exits the funnel bottom
-            if y <= 0:
-                y = hopper_height
-                if cls == "Fine":
-                    x = np.random.normal(0, 1)
-                elif cls == "Coarse":
-                    x = np.random.choice([-hopper_width/2, hopper_width/2]) + np.random.normal(0, 0.5)
-                else:
-                    x = np.random.uniform(-hopper_width/2, hopper_width/2)
-
-            # Update position
-            pos[0], pos[1] = x, y
-            xs.append(x)
-            ys.append(y)
+                x_new = x * (1 - 0.5 * funnel_ratio)  # medium pull
+            xs.append(x_new)
+            ys.append(y_new)
             sizes.append(size)
             colors.append("blue" if cls == "Fine" else "red" if cls == "Coarse" else "gray")
-
         scat.set_offsets(np.c_[xs, ys])
         scat.set_sizes(sizes)
         scat.set_color(colors)
         return scat,
 
-    ani = animation.FuncAnimation(fig, update, frames=200, interval=100, blit=True)
+    ani = animation.FuncAnimation(fig, update, frames=100, interval=100, blit=True)
     ani.save("hopper_animation.gif", writer="pillow")
 
-    st.image("hopper_animation.gif", caption="Particles funnel down and discharge continuously.")
+    st.image("hopper_animation.gif", caption="Particles funnel toward the bottom opening.")
