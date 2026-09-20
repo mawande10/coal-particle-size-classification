@@ -139,7 +139,7 @@ with prediction_tab:
 # ============================================================
 
 with animation_tab:
-    st.subheader("🎥 Hopper Animation — Fine vs Coarse Coal Flow")
+    st.subheader("🎥 Hopper Animation — Funnel Flow")
 
     hopper_width = 10
     hopper_height = 15
@@ -177,8 +177,17 @@ with animation_tab:
     def update(frame):
         xs, ys, sizes, colors = [], [], [], []
         for (x, y, cls, size) in positions:
-            ys.append(y - frame * 0.1)
-            xs.append(x)
+            # Funnel effect: as particles move down, x shifts toward center
+            y_new = y - frame * 0.1
+            funnel_ratio = max(0, (hopper_height - y_new) / hopper_height)
+            if cls == "Fine":
+                x_new = x * (1 - 0.7 * funnel_ratio)  # strong pull to center
+            elif cls == "Coarse":
+                x_new = x * (1 - 0.2 * funnel_ratio)  # weaker pull, stays near walls
+            else:
+                x_new = x * (1 - 0.5 * funnel_ratio)  # medium pull
+            xs.append(x_new)
+            ys.append(y_new)
             sizes.append(size)
             colors.append("blue" if cls == "Fine" else "red" if cls == "Coarse" else "gray")
         scat.set_offsets(np.c_[xs, ys])
@@ -189,7 +198,8 @@ with animation_tab:
     ani = animation.FuncAnimation(fig, update, frames=100, interval=100, blit=True)
     ani.save("hopper_animation.gif", writer="pillow")
 
-    st.image("hopper_animation.gif", caption="Fine coal moves to center; coarse coal moves to edges.")
+    st.image("hopper_animation.gif", caption="Particles funnel toward the bottom opening.")
+
 
 
 # ============================================================
